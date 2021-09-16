@@ -1,5 +1,5 @@
-.vscode
-build
+**/.vscode
+**/build
 .labels
 .breakpoints
 .watches
