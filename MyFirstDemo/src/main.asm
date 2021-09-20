@@ -5,9 +5,14 @@
 
 	!source "inc/common.asm"
 	!source "inc/memory.asm"
-	
-	*=$2000 - 2
-	!binary "../assets/img/logo-full.koa"
+
+	*=$2000
+logo	
+	!binary "../assets/img/logo-full.koa",,2 ; skip 2 first bytes (load addr)
+
+	*=$80f8
+music
+	!binary "../assets/sid/Rock_Castle_music_2.sid",,$7c+2 ; skip 126 first bytes (124 -> header, 2 -> load addr). data = 19759 bytes - $4d2f
 
 	*=$1000
 
@@ -16,29 +21,34 @@ main
 	stx BORDER_ADR
 	stx BACKGRD_ADR
 
+	; init music
+	ldx #00
+	ldy #00
+	jsr music
+
 	ldx #00
 
 load_img
-	lda $3f40,x
+	lda logo + 8000,x
 	sta SCREEN_RAM,x
-	lda $3f40 + 250,x
+	lda logo + 8000 + 250,x
 	sta SCREEN_RAM + 250,x
-	lda $3f40 + 500,x
+	lda logo + 8000 + 500,x
 	sta SCREEN_RAM + 500,x
-	lda $3f40 + 750,x
+	lda logo + 8000 + 750,x
 	sta SCREEN_RAM + 750,x
 	
-	lda $4328,x
+	lda logo + 9000,x
 	sta COLOR_RAM,x
-	lda $4328 + 250,x
+	lda logo + 9000 + 250,x
 	sta COLOR_RAM + 250,x
-	lda $4328 + 500,x
+	lda logo + 9000 + 500,x
 	sta COLOR_RAM + 500,x
-	lda $4328 + 750,x
+	lda logo + 9000 + 750,x
 	sta COLOR_RAM + 750,x
 
 	inx
-	cpx #251
+	cpx #250
 
 	bne load_img
 
@@ -54,4 +64,28 @@ load_img
 	ldx #%00011000
 	stx $d018
 
+	sei				; disables all interrupts
+	ldx #0			; set raster interrupt at line 0
+	stx $d012
+	ldx #<irq		; set interrupt routine at label mplayer
+	ldy #>irq
+	stx $0314
+	sty $0315
+	lda #%00000001	; enable raster interrupt
+	sta $d01a
+	cli				; enable all interrupts
+
 	jmp *
+
+irq
+	lda #%00000001       ; acknowledge IRQ / clear register for next interrupt
+	sta $d019
+
+	sei
+	ldx #$d4
+	ldy #$cb
+	stx $0314
+	sty $0315
+	cli				; enable all interrupts
+
+	jmp $ea31	
