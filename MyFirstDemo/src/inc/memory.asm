@@ -1,0 +1,4 @@
+    BORDER_ADR = $d020
+    BACKGRD_ADR = $d021
+    SCREEN_RAM = $0400
+    COLOR_RAM = $d800
