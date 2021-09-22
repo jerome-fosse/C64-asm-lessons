@@ -1,0 +1,4 @@
+    ADR_BORDER = $d020
+    ADR_BACKGROUND = $d021
+    ADR_SCREEN = $0400
+    ADR_COLOR  = $d800
