@@ -11,3 +11,11 @@ What I have learned with this code :
 - managing colors
 - check keyboard input
 - I also used irq for the first time.
+
+## 2. RasterInterrupt
+A simple program that use raster interrupts to draw a few colored strips on the border. The idea is te declare one sub routine per strip and chain raster calls.
+
+What I have learned :
+- Use raster interrupts
+- chain interrupts
+- use macros
