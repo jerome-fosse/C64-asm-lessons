@@ -1,30 +1,19 @@
 	*=$0801
 	!byte $0c, $08, $0a, $00, $9e, $20
-	!byte $34, $30, $39, $36, $00, $00
+	!byte $32, $33, $30, $34, $00, $00
 	!byte $00    
 
 	!source "inc/common.asm"
 	!source "inc/memory.asm"
 
-	*=$2000
-logo	
-	!binary "../assets/img/logo-full.koa",,2 ; skip 2 first bytes (load addr)
-
-	*=$80f8
-music
-	!binary "../assets/sid/Rock_Castle_music_2.sid",,$7c+2 ; skip 126 first bytes (124 -> header, 2 -> load addr). data = 19759 bytes - $4d2f
-
-	*=$1000
-
+	*=$0900
 main
 	ldx #BLACK
 	stx BORDER_ADR
 	stx BACKGRD_ADR
 
 	; init music
-	ldx #00
-	ldy #00
-	jsr music
+	jsr $0ffc
 
 	ldx #00
 
@@ -58,34 +47,50 @@ load_img
 	; go to multi colored mode. set bit 4 to 1 at addr $d016
 	ldx #%00011000
 	stx $d016
-
 	; set bitmap memory to $2000-$3FFF -> bit 3 = 1
 	; set screen memory to $0400-$07FF -> bits 7-4 = 0001
 	ldx #%00011000
 	stx $d018
 
-	sei				; disables all interrupts
-	ldx #0			; set raster interrupt at line 0
-	stx $d012
-	ldx #<irq		; set interrupt routine at label mplayer
-	ldy #>irq
-	stx $0314
-	sty $0315
-	lda #%00000001	; enable raster interrupt
+	sei				    ; pause all interrupts
+  	
+	lda #%01111111      ; disable timer interrupt
+	sta $dc0d
+
+	lda #%00000001	    ; enable raster interrupt $f1
 	sta $d01a
-	cli				; enable all interrupts
+
+	lda #%01111111      ; High bit of raster line cleared
+	and $d011
+	sta $d011
+	
+	ldx #0 		        ; set raster interrupt at line 0
+	stx $d012
+	ldx #<irq		    ; set interrupt routine at label irq
+	stx $0314
+	ldx #>irq
+	stx $0315
+	cli				    ; resume all interrupts
 
 	jmp *
 
 irq
-	lda #%00000001       ; acknowledge IRQ / clear register for next interrupt
+	lda #01             ; acknowledge IRQ / clear register for next interrupt
 	sta $d019
+	jsr $1100
 
-	sei
-	ldx #$d4
-	ldy #$cb
-	stx $0314
-	sty $0315
-	cli				; enable all interrupts
++	jmp $ea81	
 
-	jmp $ea31	
+
+
+	*=$0ffc
+music
+	!binary "../assets/sid/TMK_Noter.sid",,$7c+2 ; skip 126 first bytes (124 -> header, 2 -> load addr)
+
+
+	*=$2000
+logo	
+	!binary "../assets/img/logo-full.koa",,2 ; skip 2 first bytes (load addr)
+
+
+

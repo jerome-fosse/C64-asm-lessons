@@ -19,3 +19,14 @@ What I have learned :
 - Use raster interrupts
 - chain interrupts
 - use macros
+
+## 3. FirstDemo
+More a cracktro. As said a very simple demo that permit to learn how to display graphics and play music.
+
+What I have learned :
+- Display graphics
+- Play sid music
+
+Todo :
+- add a scroll text
+- small graphic effect (stars or wave effect)
