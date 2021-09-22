@@ -15,18 +15,29 @@ mystring
 	!source "./inc/common.asm"
 	!source "./inc/memory.asm"
 
+disable_timer_interrupts
+  	lda #%01111111      ; disable timer interrupt
+	sta $dc0d
+	rts
+
 	*=$1000
 
 main
 	ldx #BLACK
+
 	stx ADR_BACKGROUND  ; set background to black
 	stx ADR_BORDER		; set border to black
+	jsr disable_timer_interrupts
 	jsr clearscreen
 	jsr helloworld
 
 	sei					; disable all interrupts
 
-	lda #00             ; set raster interrupt at line 0
+  	lda #%01111111      ; High bit of raster line cleared, we're only working within single byte ranges
+	and $d011
+  	sta $d011
+
+	lda #100            ; set raster interrupt at line 100
 	sta $d012
 
 	ldx #<irq           ; interrupt execute routine at label irq
