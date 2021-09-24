@@ -28,6 +28,20 @@ disable_timer_interrupts
 	sta $dc0d
 	rts
 
+save_registers
+	pha
+	txs
+	tya
+	pha
+	rts
+
+restore_registers	
+	pla
+	tya
+	tsx
+	pla
+	rts
+
 	*=$1000
 
 main
@@ -42,8 +56,7 @@ border_100
 	stx $d020
 	+setRasterIrq 102 ,border_102
 
-	jmp $ea31
-
+	jmp $ea81
 
 border_102
 	ldx #01				; Acknowledge raster interrupt
@@ -52,7 +65,7 @@ border_102
 	stx $d020
 	+setRasterIrq 112 ,border_112
 
-	jmp $ea31
+	jmp $ea81
 
 border_112
 	ldx #01				; Acknowledge raster interrupt
@@ -61,7 +74,7 @@ border_112
 	stx $d020
 	+setRasterIrq 114 ,border_114
 
-	jmp $ea31
+	jmp $ea81
 
 border_114
 	ldx #01				; Acknowledge raster interrupt
@@ -70,7 +83,7 @@ border_114
 	stx $d020
 	+setRasterIrq 124 ,border_124
 
-	jmp $ea31
+	jmp $ea81
 
 border_124
 	ldx #01				; Acknowledge raster interrupt
@@ -79,7 +92,7 @@ border_124
 	stx $d020
 	+setRasterIrq 126 ,border_126
 
-	jmp $ea31
+	jmp $ea81
 
 border_126
 	ldx #01				; Acknowledge raster interrupt
@@ -88,7 +101,7 @@ border_126
 	stx $d020
 	+setRasterIrq 136 ,border_136
 
-	jmp $ea31
+	jmp $ea81
 
 border_136
 	ldx #01				; Acknowledge raster interrupt
@@ -97,7 +110,7 @@ border_136
 	stx $d020
 	+setRasterIrq 138 ,border_138
 
-	jmp $ea31
+	jmp $ea81
 
 border_138
 	ldx #01				; Acknowledge raster interrupt
@@ -106,7 +119,7 @@ border_138
 	stx $d020
 	+setRasterIrq 148 ,border_148
 
-	jmp $ea31
+	jmp $ea81
 
 border_148
 	ldx #01				; Acknowledge raster interrupt
@@ -115,7 +128,7 @@ border_148
 	stx $d020	
 	+setRasterIrq 150 ,border_end
 
-	jmp $ea31
+	jmp $ea81
 
 border_end
 	ldx #01				; Acknowledge raster interrupt
@@ -124,4 +137,4 @@ border_end
 	stx $d020
 	+setRasterIrq 100 ,border_100
 
-	jmp $ea31
+	jmp $ea81
